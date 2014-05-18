@@ -1,0 +1,28 @@
+{
+  "name": "bee",
+  "version": "0.0.1",
+  "description": "a javascript template for mobile.",
+  "main": "bee.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hanan198501/bee.git"
+  },
+  "keywords": [
+    "bee.js"
+  ],
+  "author": "hanan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hanan198501/bee/issues"
+  },
+  "homepage": "https://github.com/hanan198501/bee",
+  "devDependencies": {
+    "gulp": "^3.6.2",
+    "gulp-concat": "^2.2.0",
+    "gulp-uglify": "^0.3.0",
+    "gulp-util": "^2.2.14"
+  }
+}
