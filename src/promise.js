@@ -87,6 +87,23 @@
         return pms;
     }
 
+    Promise.resolve = function (obj) {
+        var pms = new Promise();
+        if (obj && typeof obj.then === 'function'){
+            for(var i in pms){
+                obj[i] = pms[i];
+            }
+            return obj;
+        }
+        else {
+            setTimeout(function () {
+                pms.resolve(obj);
+            }, 0);
+            return pms;
+        }
+
+    }
+
     win.Promise = Promise;
 
 }(window);
