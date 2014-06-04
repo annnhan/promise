@@ -1,8 +1,10 @@
 /**
  * Created by an.han on 14-6-4.
  */
-~function () {
-    var Promise = function (fun) {
+~function (win) {
+    
+    // constructor
+    function Promise (fun) {
         var me = this;
         var resolve = function (val) {
             me.resolve(val);
@@ -15,9 +17,10 @@
         me.rsq = [];
         me.rjq = [];
 
-        fun(resolve, reject);
+        (typeof fun === 'function') && fun(resolve, reject);
 
     }
+    
     Promise.fn = Promise.prototype;
 
     Promise.fn.then = function (resolve, reject) {
@@ -27,22 +30,21 @@
     }
 
     Promise.fn.resolve = function (val) {
-        if (this.st === 'rejected') {
-            return;
+        if (this.st === 'resolved' || this.st === 'default' ) {
+            this.st = 'resolved';
+            this._doQ(val);
         }
-        this.st = 'resolved';
-        this.doQueue(val);
+        
     }
 
     Promise.fn.reject = function (val) {
-        if (this.st === 'resolved') {
-            return;
+        if (this.st === 'rejected' || this.st === 'default') {
+            this.st = 'rejected';
+            this._doQ(val);
         }
-        this.st = 'rejected';
-        this.doQueue(val);
     }
 
-    Promise.fn.doQueue = function (val) {
+    Promise.fn._doQ = function (val) {
         if (!this.rsq.length && !this.rjq.length) {
             return ;
         }
@@ -64,28 +66,32 @@
             this.rjq = [];
         }
         else {
-            this.doQueue(ret);
+            this._doQ(ret);
         }
     }
-}()
 
-
-function async(value) {
-    var pms = new Promise(function (resolve, reject) {
-        setTimeout(function () {
-            console.log(++value);
-            resolve(value);
-        }, 1000);
-    })
-    return pms;
-}
-function count(n) {
-    var i = 0;
-    var funStr = 'async(0)';
-    while (++i < n) {
-        funStr += '.then(async)';
+    Promise.all = function (arr) {
+        var pms = new Promise();
+        var len = arr.length,
+            i = 0,
+            res = 0;
+        while(i < len) {
+            arr[i].then(
+                function(i){ return function () {
+                    if(++res === len){
+                        pms.resolve();
+                    }
+            }}(i),
+                function(val){
+                    pms.reject(val);
+                }
+            );
+            i++;
+        }
+        return pms;
     }
-    eval(funStr);
-}
-count(5);
+
+    win.Promise = Promise;
+
+}(window);
 
