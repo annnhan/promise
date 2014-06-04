@@ -7,7 +7,7 @@
             reject = function (val) {
                 me.reject(val);
             }
-        me.st = 'default';
+        me.st = 'pending';
         me.rsq = [];
         me.rjq = [];
         (typeof fun === 'function') && fun(resolve, reject);
@@ -26,15 +26,14 @@
     }
 
     Promise.fn.resolve = function (val) {
-        if (this.st === 'resolved' || this.st === 'default') {
+        if (this.st === 'resolved' || this.st === 'pending') {
             this.st = 'resolved';
             this._doQ(val);
         }
-
     }
 
     Promise.fn.reject = function (val) {
-        if (this.st === 'rejected' || this.st === 'default') {
+        if (this.st === 'rejected' || this.st === 'pending') {
             this.st = 'rejected';
             this._doQ(val);
         }
