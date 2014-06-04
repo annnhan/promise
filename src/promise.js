@@ -1,45 +1,44 @@
 ~function (win) {
-    function Promise(fun) {
-        var me = this,
-            resolve = function (val) {
-                me.resolve(val);
-            },
-            reject = function (val) {
-                me.reject(val);
-            }
-        me.st = 'pending';
-        me.rsq = [];
-        me.rjq = [];
-        (typeof fun === 'function') && fun(resolve, reject);
-    }
+    var Promise = function (fun) {
+            var me = this,
+                resolve = function (val) {
+                    me.resolve(val);
+                },
+                reject = function (val) {
+                    me.reject(val);
+                }
+            me.st = 'pending';
+            me.rsq = [];
+            me.rjq = [];
+            (typeof fun === 'function') && fun(resolve, reject);
+        },
+        fn = Promise.prototype;
 
-    Promise.fn = Promise.prototype;
-
-    Promise.fn.then = function (resolve, reject) {
+    fn.then = function (resolve, reject) {
         this.rsq.push(resolve);
         this.rjq.push(reject);
         return this;
     }
 
-    Promise.fn.catch = function (reject) {
+    fn.catch = function (reject) {
         return this.then(null, reject);
     }
 
-    Promise.fn.resolve = function (val) {
+    fn.resolve = function (val) {
         if (this.st === 'resolved' || this.st === 'pending') {
             this.st = 'resolved';
             this._doQ(val);
         }
     }
 
-    Promise.fn.reject = function (val) {
+    fn.reject = function (val) {
         if (this.st === 'rejected' || this.st === 'pending') {
             this.st = 'rejected';
             this._doQ(val);
         }
     }
 
-    Promise.fn._doQ = function (val) {
+    fn._doQ = function (val) {
         if (!this.rsq.length && !this.rjq.length) {
             return;
         }
@@ -89,8 +88,8 @@
 
     Promise.resolve = function (obj) {
         var pms = new Promise();
-        if (obj && typeof obj.then === 'function'){
-            for(var i in pms){
+        if (obj && typeof obj.then === 'function') {
+            for (var i in pms) {
                 obj[i] = pms[i];
             }
             return obj;
@@ -107,4 +106,3 @@
     win.Promise = Promise;
 
 }(window);
-
