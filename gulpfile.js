@@ -8,10 +8,10 @@ var version = JSON.parse(fs.readFileSync('package.json')).version;
 gulp.task('default', ['build']);
 
 gulp.task('build', function () {
-    gulp.src('./src/*')
-        .pipe(concat('bee.' + version + '.js'))
+    gulp.src('./src/*.js')
+        .pipe(concat('promise.' + version + '.js'))
         .pipe(gulp.dest('./prd'))
         .pipe(uglify())
-        .pipe(concat('bee.' + version + '.min.js'))
+        .pipe(concat('promise.' + version + '.min.js'))
         .pipe(gulp.dest('./prd'))
 });
