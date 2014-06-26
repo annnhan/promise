@@ -1,4 +1,4 @@
-~function (win) {
+~function (global) {
     var Promise = function (fun) {
             var me = this,
                 resolve = function (val) {
@@ -88,6 +88,6 @@
         }
     }
 
-    win.Promise = Promise;
+    global.Promise = Promise;
 
-}(window);
+}(this);
