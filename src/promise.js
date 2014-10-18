@@ -1,4 +1,10 @@
 ~function (global) {
+
+    // status
+    var PENDING = 0,
+        FULFILLED = 1,
+        REJECTED = 2;
+
     var Promise = function (fun) {
             var me = this,
                 resolve = function (val) {
@@ -7,18 +13,19 @@
                 reject = function (val) {
                     me.reject(val);
                 }
-            me._st = 'pending';
-            me._rsq = null;
-            me._rjq = null;
+            me._status = PENDING;
+            me._onFulfilled = null;
+            me._onRejected = null;
             (typeof fun === 'function') && fun(resolve, reject);
-        },
-        fn = Promise.prototype;
+        }
+
+    var fn = Promise.prototype;
 
     fn.then = function (resolve, reject) {
         var pms = new Promise();
-        this._rsq = function (val) {
+        this._onFulfilled = function (val) {
             var ret = resolve ? resolve(val) : val;
-            if (ret instanceof Promise) {
+            if (Promise.isPromise(ret)) {
                 ret.then(function (val) {
                     pms.resolve(val);
                 });
@@ -27,8 +34,9 @@
                 pms.resolve(ret);
             }
         };
-        this._rjq = function (val) {
-            pms.reject(reject(val));
+        this._onRejected = function (val) {
+            var ret = reject ? reject(val) : val;
+            pms.reject(ret);
         };
         return pms;
     }
@@ -38,56 +46,65 @@
     }
 
     fn.resolve = function (val) {
-        if (this._st === 'resolved' || this._st === 'pending') {
-            this._st = 'resolved';
-            this._rsq && this._rsq(val);
+        if (this._status === PENDING) {
+            this._status = FULFILLED;
+            this._onFulfilled && this._onFulfilled(val);
         }
     }
 
     fn.reject = function (val) {
-        if (this._st === 'rejected' || this._st === 'pending') {
-            this._st = 'rejected';
-            this._rsq && this._rjq(val);
+        if (this._status === PENDING) {
+            this._status = REJECTED;
+            this._onRejected && this._onRejected(val);
         }
     }
 
     Promise.all = function (arr) {
         var pms = new Promise();
         var len = arr.length,
-            i = 0,
-            res = 0;
-        while (i < len) {
-            arr[i].then(
-                function () {
-                    if (++res === len) {
-                        pms.resolve();
+            i = -1,
+            count = 0,
+            results = [];
+        while (++i < len) {
+            ~function (i) {
+                arr[i].then(
+                    function (val) {
+                        results[i] = val;
+                        if (++count === len) {
+                            pms.resolve(results);
+                        }
+                    },
+                    function (val) {
+                        pms.reject(val);
                     }
-                },
-                function (val) {
-                    pms.reject(val);
-                }
-            );
-            i++;
+                );
+            }(i);
         }
         return pms;
     }
 
     Promise.resolve = function (obj) {
-        var pms = new Promise();
-        if (obj && typeof obj.then === 'function') {
-            for (var i in pms) {
-                obj[i] = pms[i];
-            }
-            return obj;
+        var ret;
+        if (!Promise.isPromise(obj)) {
+            ret = obj;
+            obj = new Promise();
         }
-        else {
-            setTimeout(function () {
-                pms.resolve(obj);
-            });
-            return pms;
-        }
+        setTimeout(function () {
+            obj.resolve(ret);
+        });
+        return obj;
     }
 
+    Promise.isPromise = function (obj) {
+        return obj instanceof Promise;
+    }
+
+
     global.Promise = Promise;
+
+    try{
+        module.exports = Promise;
+    }
+    catch (e){}
 
 }(this);
