@@ -95,6 +95,18 @@
         return obj;
     }
 
+    Promise.reject = function (obj) {
+        var ret;
+        if (!Promise.isPromise(obj)) {
+            ret = obj;
+            obj = new Promise();
+        }
+        setTimeout(function () {
+            obj.reject(ret);
+        });
+        return obj;
+    }
+
     Promise.isPromise = function (obj) {
         return obj instanceof Promise;
     }
