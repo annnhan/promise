@@ -1,5 +1,5 @@
 {
-  "name": "es6-promise",
+  "name": "es6_promise",
   "version": "0.0.1",
   "description": "es6 promise",
   "main": "src/promise.js",
