@@ -1,8 +1,8 @@
 {
-  "name": "promise",
+  "name": "es6-promise",
   "version": "0.0.1",
-  "description": "promise.",
-  "main": "promise.js",
+  "description": "es6 promise",
+  "main": "src/promise.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
