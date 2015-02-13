@@ -6,38 +6,38 @@
         REJECTED = 2;
 
     var Promise = function (fun) {
-            var me = this,
-                resolve = function (val) {
-                    me.resolve(val);
-                },
-                reject = function (val) {
-                    me.reject(val);
-                }
-            me._status = PENDING;
-            me._onFulfilled = null;
-            me._onRejected = null;
-            (typeof fun === 'function') && fun(resolve, reject);
-        }
+        var me = this,
+            resolve = function (val) {
+                me.resolve(val);
+            },
+            reject = function (val) {
+                me.reject(val);
+            }
+        me._status = PENDING;
+        me._onFulfilled = [];
+        me._onRejected = [];
+        (typeof fun === 'function') && fun(resolve, reject);
+    }
 
     var fn = Promise.prototype;
 
     fn.then = function (resolve, reject) {
         var pms = new Promise();
-        this._onFulfilled = function (val) {
+        this._onFulfilled.push(function (val) {
             var ret = resolve ? resolve(val) : val;
             if (Promise.isPromise(ret)) {
                 ret.then(function (val) {
                     pms.resolve(val);
                 });
             }
-            else{
+            else {
                 pms.resolve(ret);
             }
-        };
-        this._onRejected = function (val) {
+        });
+        this._onRejected.push(function (val) {
             var ret = reject ? reject(val) : val;
             pms.reject(ret);
-        };
+        });
         return pms;
     }
 
@@ -48,14 +48,18 @@
     fn.resolve = function (val) {
         if (this._status === PENDING) {
             this._status = FULFILLED;
-            this._onFulfilled && this._onFulfilled(val);
+            for (var i = 0, len = this._onFulfilled.length; i < len; i++) {
+                this._onFulfilled[i](val);
+            }
         }
     }
 
     fn.reject = function (val) {
         if (this._status === PENDING) {
             this._status = REJECTED;
-            this._onRejected && this._onRejected(val);
+            for (var i = 0, len = this._onRejected.length; i < len; i++) {
+                this._onRejected[i](val);
+            }
         }
     }
 
@@ -83,14 +87,13 @@
         return pms;
     }
 
-    Promise.resolve = function (obj) {
-        var ret;
+    Promise.resolve = function (obj, param) {
         if (!Promise.isPromise(obj)) {
-            ret = obj;
+            param = obj;
             obj = new Promise();
         }
         setTimeout(function () {
-            obj.resolve(ret);
+            obj.resolve(param);
         });
         return obj;
     }
@@ -110,7 +113,6 @@
     Promise.isPromise = function (obj) {
         return obj instanceof Promise;
     }
-
 
     global.Promise = Promise;
 
