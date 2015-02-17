@@ -3,7 +3,7 @@ var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 
-var version = JSON.parse(fs.readFileSync('package.json')).version;
+var version = require('./package').version;
 
 gulp.task('default', ['build']);
 
