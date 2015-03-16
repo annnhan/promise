@@ -87,6 +87,35 @@
         return pms;
     }
 
+    Promise.race = function (arr) {
+        var pms = new Promise();
+        var len = arr.length,
+            i = -1,
+            count = 0,
+            results = [];
+        if (len === 0) {
+            setTimeout(function () {
+                pms.resolve();
+            });
+        }
+        while (++i < len) {
+            ~function (i) {
+                arr[i].then(
+                    function (val) {
+                        pms.resolve(val);
+                    },
+                    function (val) {
+                        results[i] = val;
+                        if (++count === len) {
+                            pms.reject(results);
+                        }
+                    }
+                );
+            }(i);
+        }
+        return pms;
+    }
+
     Promise.resolve = function (obj, param) {
         if (!Promise.isPromise(obj)) {
             param = obj;
@@ -114,7 +143,7 @@
         return obj instanceof Promise;
     }
 
-    global.Promise = Promise;
+    global.Promise = global.Promise || Promise;
 
     try{
         module.exports = Promise;
