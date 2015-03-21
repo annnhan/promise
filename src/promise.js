@@ -116,27 +116,26 @@
         return pms;
     }
 
-    Promise.resolve = function (obj, param) {
-        if (!Promise.isPromise(obj)) {
-            param = obj;
-            obj = new Promise();
+    Promise.resolve = function (obj) {
+        if (Promise.isPromise(obj)) {
+            return obj;
         }
-        setTimeout(function () {
-            obj.resolve(param);
+        return new Promise(function (resolve) {
+            setTimeout(function () {
+                resolve();
+            });
         });
-        return obj;
     }
 
     Promise.reject = function (obj) {
-        var ret;
-        if (!Promise.isPromise(obj)) {
-            ret = obj;
-            obj = new Promise();
+        if (Promise.isPromise(obj)) {
+            return obj;
         }
-        setTimeout(function () {
-            obj.reject(ret);
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                reject(ret);
+            });
         });
-        return obj;
     }
 
     Promise.isPromise = function (obj) {
