@@ -90,28 +90,16 @@
     Promise.race = function (arr) {
         var pms = new Promise();
         var len = arr.length,
-            i = -1,
-            count = 0,
-            results = [];
-        if (len === 0) {
-            setTimeout(function () {
-                pms.resolve();
-            });
-        }
+            i = -1;
         while (++i < len) {
-            ~function (i) {
-                arr[i].then(
-                    function (val) {
-                        pms.resolve(val);
-                    },
-                    function (val) {
-                        results[i] = val;
-                        if (++count === len) {
-                            pms.reject(results);
-                        }
-                    }
-                );
-            }(i);
+            arr[i].then(
+                function (val) {
+                    pms.resolve(val);
+                },
+                function (val) {
+                    pms.reject(val);
+                }
+            );
         }
         return pms;
     }
