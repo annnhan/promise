@@ -1,10 +1,10 @@
 {
   "name": "es6_promise",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "es6 promise",
   "main": "src/promise.js",
   "scripts": {
-    "before_publish": "gulp && git add ./prd/ && git commit -am 'pre publish' && git push"
+    "prepublish": "gulp && git add ./prd/ && git commit -am 'pre publish' && git push"
   },
   "repository": {
     "type": "git",
