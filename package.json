@@ -1,10 +1,10 @@
 {
   "name": "es6_promise",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "es6 promise",
   "main": "src/promise.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "before_publish": "gulp && git add ./prd/ && git commit -am 'pre publish' && git push"
   },
   "repository": {
     "type": "git",
