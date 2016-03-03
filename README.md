@@ -4,4 +4,4 @@ promise
 A ecmascript6 promise patch.
 
 
-Introduction:[http://cssha.com/ecmascript6-promise/](http://cssha.com/ecmascript6-promise/)
+Introduction:[http://annn.me/ecmascript6-promise/](http://annn.me/ecmascript6-promise/)
